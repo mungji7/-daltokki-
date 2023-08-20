@@ -46,37 +46,19 @@
         });
    }
 
-   // 카카오 Custom -> 얘는 모달로 안된다고 합니다.
-   try {
-     function sendLinkDefault() {
-       Kakao.init('efbfe79e4b4775d2088ca0e7d9a8edf1')
-       Kakao.Link.sendDefault({
-         objectType: 'feed',
-         content: {
-           title: '달토끼🐰',
-           description: '배고픈 토끼에게 최고의 송편을 만들어 주새요😢😢',
-           imageUrl:
-             'http://k.kakaocdn.net/dn/bozSxc/btsp6qTBbFg/rQywrAKm7RY1uAcBbmdqrk/kakaolink40_original.png',
-           link: {
-             mobileWebUrl: 'https://developers.kakao.com',
-             webUrl: 'https://developers.kakao.com',
-           },
-         },
-         buttons: [
-           {
-             title: '웹으로 보기',
-             link: {
-               // 여기서 직접 수정
-               // 이
-               mobileWebUrl: 'https://developers.kakao.com',
-               webUrl: 'https://developers.kakao.com',
-             },
-           },
-         ],
-       })
-     }
-   ; window.kakaoDemoCallback && window.kakaoDemoCallback() }
-   catch(e) { window.kakaoDemoException && window.kakaoDemoException(e) }
+    // ----------------------miju(08/18 추가)-------------------------------
+    // DOM 로딩이 완료되면 실행될 함수
+    document.addEventListener("DOMContentLoaded", function() {
+        var goToWriteSpButton = document.getElementById("goToWriteSpButton");
+        var hiddenIdInput = document.getElementById("hiddenIdInput");
+
+        goToWriteSpButton.addEventListener("click", function() {
+            var id = hiddenIdInput.value;
+            var url = 'writeSp?id=' + encodeURIComponent(id);
+            location.href = url;
+        });
+    });
+    // ----------------------miju(08/18 추가)-------------------------------
 </script>
 <body>
     <div class="container">
@@ -99,11 +81,10 @@
             <!-- 본인의 송편 페이지면 링크 버튼 출력-->
             <button th:if="${#strings.equals(#authentication.name, param.id)}" id="shareKakao" onClick="sendLinkDefault()">카카오 공유</button>
             <button th:if="${#strings.equals(#authentication.name, param.id)}" id="shareLink" onclick="openCopyModal()">링크 공유</button>
-            <button id="googleLogin" onclick="location.href='/login/oauth2/code/{여기아이디를 어케넣음}'">구글 로그인</button>
-            <!------------------miju---------------------------->
+            <button id="googleLogin" onclick="location.href='/login/oauth2/code/google'">구글 로그인</button>
             <!-- 본인의 송편 페이지가 아니면 송편 작성 버튼 출력-->
-            <button th:if="${!#strings.equals(#authentication.name, param.id)}" onclick="location.href='writeSp'">메시지 작성</button>
-            <!------------------miju---------------------------->
+            <button th:if="${!#strings.equals(#authentication.name, param.id)}" id="goToWriteSpButton">메시지 작성</button>
+            <input type="hidden" id="hiddenIdInput" name="id" th:value="${param.id}">
         </div>
     </div>
 
@@ -216,6 +197,40 @@
                 }); // ajax
             }); // event
         }); // document
+
+        // 카카오 Custom -> 얘는 모달로 안된다고 합니다.
+        try {
+<!--     alert("https://developers.kakao.com/main?id="+paramId);-->
+<!--     alert("https://developers.kakao.com/main?id=" + encodeURIComponent(paramId));-->
+<!--     alert(window.location.href);-->
+
+         function sendLinkDefault() {
+           Kakao.init('efbfe79e4b4775d2088ca0e7d9a8edf1')
+           Kakao.Link.sendDefault({
+             objectType: 'feed',
+             content: {
+               title: '달토끼🐰',
+               description: '배고픈 토끼에게 최고의 송편을 만들어 주새요😢😢',
+               imageUrl:
+                 'http://k.kakaocdn.net/dn/bozSxc/btsp6qTBbFg/rQywrAKm7RY1uAcBbmdqrk/kakaolink40_original.png',
+               link: {
+                  mobileWebUrl: window.location.href,
+                  webUrl:window.location.href,
+               },
+             },
+             buttons: [
+               {
+                 title: '웹으로 보기',
+                 link: {
+                    mobileWebUrl: window.location.href,
+                    webUrl: window.location.href,
+                 },
+               },
+             ],
+           })
+         }
+         ; window.kakaoDemoCallback && window.kakaoDemoCallback() }
+         catch(e) { window.kakaoDemoException && window.kakaoDemoException(e) }
     </script>
 </body>
 

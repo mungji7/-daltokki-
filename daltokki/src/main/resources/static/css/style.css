@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh; /* body의 높이를 브라우저의 높이로 강제로 맞춰줌 -> body 기준으로 모달 위치 */
-    background-color: white;
+    background-color: #212539;
     border: 5px solid red;
     /* 별도로 min-width를 설정하지 않으면 modal의 container의 width 사이즈로 나옴 */
 }
@@ -54,4 +54,18 @@ button {
     /* margin: 20px; */
     border: 5px solid red;
     border-radius: 5px;
+}
+
+ @font-face {
+    font-family: 'NeoDunggeunmoPro-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/NeoDunggeunmoPro-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    font-family: 'NeoDunggeunmoPro-Regular'; /* 폰트 적용 */
+    text-align: center;
+    margin: 0;
+    padding: 0;
 }

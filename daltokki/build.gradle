@@ -51,7 +51,22 @@ dependencies {
 	//qrcode module dependencies 추가
 	implementation 'com.google.zxing:core:3.5.0'
 	implementation 'com.google.zxing:javase:3.5.0'
+
+	// 네아로
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// oauth 라이브러리
+	implementation 'com.github.scribejava:scribejava-core:3.3.0'
+	// 유틸 라이브러리
+	implementation 'commons-lang:commons-lang:2.3'
+	// json 라이브러리
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	// gson
+	implementation 'com.google.code.gson:gson:2.9.0'
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()

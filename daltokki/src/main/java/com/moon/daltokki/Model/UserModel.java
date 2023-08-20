@@ -29,9 +29,10 @@ public class UserModel {
     @NotBlank(message = "닉네임은 필수 입력값입니다.")
     @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,10}$" , message = "닉네임은 특수문자를 포함하지 않은 2~10자리여야 합니다.")
     private String nickname;
-    private String social_login_id;
-    private String rabbit_type;
     private int sp_record;
     private String login_type;
+    private String rabbit_type;
+    //    private String social_login_id; // 사용자 id 는 username으로 통합
+
 
 }

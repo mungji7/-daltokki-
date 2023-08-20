@@ -5,42 +5,33 @@
     <meta charset="UTF-8">
     <title>달토끼>메시지</title>
 
+    <!-- Neo둥근고딕Pro 폰트 적용 -->
+    <link rel="stylesheet" href="css/message.css">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #200589;
         }
 
         #messageForm {
             background-color: #fff;
             border-radius: 10px;
-            padding: 20px;
+            /* padding: 20px; */
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            width: 60%;
+            width: 50%;
             margin: 50px auto;
         }
 
         h1 {
-            color: #333;
-        }
-
-        h2 {
-            color: #555;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #777;
-            font-size: 14px;
+            color: #fff;
         }
 
         input[type="text"],
         textarea {
-            width: 50%;
+            width: 90%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
@@ -59,83 +50,240 @@
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        /* 새로 추가된 스타일 */
+        table {
+            width: 60%;
+            margin: 50px auto;
+            border-collapse: collapse;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+       /* 테이블 보더를 살리고 싶다면 주석 해제하기
+       table, th, td {
+            border: 1px solid #ccc;
+        }
+       */
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        button[type="submit"] {
+            /* 버튼 스타일은 동일 */
+        }
+
+        h1 {
+            padding : 20px;
+        }
     </style>
+
+    <h1 th:inline="text"><span th:text="${param.id}"></span>님에게 작성하는 메시지</h1>
+    <hr>
 
 </head>
 <body>
-  <h1>여기는 메시지 작성 페이지 입니다</h1>
-  <!-- 송편 옵션 선택 & 메시지 작성 form -->
+<script>
+    // 08/20 추가 -------------------글자 수 체크 x -> 바이트 수 체크 o
 
-      <hr>
+    //textarea 바이트 수 체크하는 함수
+    function fn_checkByte(obj){
+        const maxByte = 100; // 최대 100바이트 입력가능(50자)
+        const text_val = obj.value; // 입력한 문자
+        const text_len = text_val.length; // 입력한 문자수
 
-      <!-- 메시지 작성 폼 -->
-      <div id="messageForm">
-          <h2>메시지 작성 폼</h2>
-          <form id="composeForm" action="/saveSp" method="post">
+        let totalByte=0;
+        for(let i=0; i<text_len; i++){
+            const each_char = text_val.charAt(i);
+            const uni_char = escape(each_char); // 유니코드 형식으로 변환
 
-              <input type="hidden" id="sp_color" name="sp_color">
-              <input type="hidden" id="sp_type" name="sp_type">
+            if(uni_char.length>4){
+                // 한글 : 2Byte
+                totalByte += 2;
+            }else{
+                // 영문,숫자,특수문자 : 1Byte
+                totalByte += 1;
+            }
+        }
 
-              <h2>송편의 색을 골라주세요</h2>
-                  <!-- button ver -->
-                  <button type="button" value="GREEN" class="sp_color_button">GREEN</button>
-                  <button type="button" value="PINK" class="sp_color_button">PINK</button>
-                  <button type="button" value="WHITE" class="sp_color_button">WHITE</button>
+        if(totalByte>maxByte){
+            alert('최대 100Byte까지만 입력가능합니다.');
+                document.getElementById("nowByte").innerText = totalByte;
+                document.getElementById("nowByte").style.color = "red";
+        }else{
+                document.getElementById("nowByte").innerText = totalByte;
+                document.getElementById("nowByte").style.color = "green";
+        }
 
-                  <!-- img ver (진행중)-->
-                  <!-- 08/13 이미지 클릭 시 결과페이지로 리턴되는 오류 수정중 -->
-                  <input type="image" src="/img/SP_GREEN.png" alt="GREEN" value="GREEN" class="sp_color_img">
-                  <input type="image" src="/img/SP_PINK.png" alt="PINK" value="PINK" class="sp_color_img">
-                  <input type="image" src="/img/SP_WHITE.png" alt="WHITE" value="WHITE" class="sp_color_img">
-              <br><br>
+    }
 
-              <h2>송편의 속을 골라주세요</h2>
-                  <button type="button" value="꿀" class="sp_type_button">꿀</button>
-                  <button type="button" value="콩" class="sp_type_button">콩</button>
-                  <button type="button" value="팥" class="sp_type_button">팥</button>
+    // 메시지에 금지어 작성 시 해당 금지어 삭제하는 함수
+    $(document).ready(function() {
+      $('#spContent_byteLimit').keyup(function() {
+        var textBoxValue = $(this).val();
+        console.log(textBoxValue);
 
-                  <input type="image" src="#" alt="꿀" class="sp_type_button">
-                  <input type="image" src="#" alt="콩" class="sp_type_button">
-                  <input type="image" src="#" alt="팥" class="sp_type_button">
-              <br><br>
+        var forbidden = [
+          '젠장', '즐' , '빠큐' , '뻐큐' , '씨발', '새끼', '개새끼', '엿먹어', '엿', 'ㅗ', '제길',
+          '씨이', '씨ㅂ','씨ㅍ','씹','앂','쌰ㅂ','씨플','씳알','씻','쓰불','쓰발','쓰볼','쓰봘',
+          '쒸이빨','쓰벵','쓰벙','씌빵','씌뱅','씌붕','쓰뻥','씨뱅아'
+        ];
 
-              <!-- 메세지 수신자 : hidden 타입으로 넘기기 / 조회만 가능하도록 -->
-              <input type="hidden" id="recipient" name="sp_recipient">
-              <!-- 메세지 발신자 : hidden 타입으로 넘기기 / JOIN 불가능하기에 중복데이터 필요 -->
-              <input type="hidden" id="senderID" name="sp_senderID" >
-              <label for="sender">보내는 사람(닉네임):</label>
-              <input type="text" id="sender" name="sp_sender">
-              <br><br>
+        for(var i = 0; i < forbidden.length; i++) {
+          if(textBoxValue.search(forbidden[i]) > -1) {
+            alert('고운말을 사용하지 않는다면\n메시지가 지워지는 마법 뾰로롱~!');
+            textBoxValue = textBoxValue.replace(forbidden[i], '');
+          }
+        }
 
+        $(this).val(textBoxValue);
+      });
+    });
 
-              <label for="content">메시지:</label><br>
-              <textarea id="content" name="sp_content" rows="4" cols="50" maxlength="200"
-                        placeholder="즐거운 추석 연휴^^!" >
-              </textarea><br><br>
-
-              <button type="submit">메시지 보내기</button>
-
-
-          </form>
-      </div>
-  <script>
-        $(document).ready(function() {
-            $(".sp_color_button").click(function() {
-                var color = $(this).val();
-                $("#sp_color").val(color);
-            });
-
-            $(".sp_type_button").click(function() {
-                var type = $(this).val();
-                $("#sp_type").val(type);
-            });
-
-              $(".sp_color_img").click(function() {
-                event.preventDefault(); // 이미지 클릭 시 submit되는 오류 해결
-                var color = $(this).attr("value");
-                $("#sp_color").val(color);
-            });
-        });
+    // 08/20 추가 -------------------글자 수 체크 x -> 바이트 수 체크 o
     </script>
+
+    </div>
+    <hr>
+
+    <!-- 메시지 작성 폼 -->
+    <div id="messageForm">
+        <form id="composeForm" action="/saveSp" method="post">
+
+            <input type="hidden" id="spColor" name="spColor">
+            <input type="hidden" id="spType" name="spType">
+            <!-- 메세지 수신자 : hidden 타입으로 넘기기 / 조회만 가능하도록 -->
+            <input type="hidden" id="recipient" name="spRecipient" th:value="${param.id}">
+
+
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        송편의 색 선택하기
+                    </td>
+                    <td>
+                        <input type="image" src="/img/SP_GREEN.png" alt="GREEN" value="GREEN" class="sp_color_img">
+                    </td>
+                    <td>
+                        <input type="image" src="/img/SP_PINK.png" alt="PINK" value="PINK" class="sp_color_img">
+                    </td>
+                    <td>
+                        <input type="image" src="/img/SP_WHITE.png" alt="WHITE" value="WHITE" class="sp_color_img">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        송편의 속 선택하기
+                    </td>
+                    <td>
+                        <input type="image" src="/img/SP_TYPE_HONEY.png" style="width:120px; height:96px;" alt="꿀(재물운)" value="HONEY" class="sp_type_img">
+                    </td>
+                    <td>
+                        <input type="image" src="/img/SP_TYPE_BEAN.png" style="width:120px; height:96px;" alt="콩(성공운)" VALUE="BEAN" class="sp_type_img">
+                    </td>
+                    <td>
+                        <input type="image" src="/img/SP_TYPE_REDBEAN.png" style="width:120px; height:96px;" alt="팥(행운)" VALUE="REDBEAN" class="sp_type_img">
+                    </td>
+                </tr>
+                <tr>
+                    <!-- 메세지 발신자(닉네임만 적용) -->
+                    <td style="text-align: center; vertical-align: middle;">
+                        보내는 사람(닉네임)
+                    </td>
+                    <td colspan="3">
+                        <input type="text" id="sender" name="spSender">
+                    </td>
+
+                </tr>
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        메시지 입력하기
+                    </td>
+                    <td colspan="3">
+                        <textarea name="spContent" rows="8"
+                                  class="form-control"
+                                  id="spContent_byteLimit"
+                                  onkeyup="fn_checkByte(this)"
+                                  placeholder="즐거운 추석 연휴^^!"></textarea>
+                        <sup>(<span id="nowByte">0</span>/100bytes)</sup>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <button type="submit">메시지 보내기</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <script>
+            // 이미지 클릭 시 value값 넘기는 스크립트
+            $(document).ready(function() {
+
+                var selectedSpTypeImg = null; // 선택된 송편 타입 이미지를 저장하는 변수
+                var originalSpTypeSrc = null; // 선택된 송편 타입 이미지의 원래 src 값을 저장하는 변수
+
+                $(".sp_type_img").click(function() {
+                    event.preventDefault(); // 이미지 클릭 시 submit되는 오류 해결
+
+                    var img = $(this);
+
+                    // 이미지가 이미 선택되어 있는 경우
+                    if (selectedSpTypeImg !== null) {
+                        // 선택된 이미지의 src 값을 원래 값으로 변경
+                        selectedSpTypeImg.attr("src", originalSpTypeSrc);
+                    }
+
+                    // 선택된 이미지 정보 업데이트
+                    selectedSpTypeImg = img;
+                    originalSpTypeSrc = img.attr("src");
+
+                    // 이미지 클릭 시 새로운 이미지로 변경
+                    var newSrc = "/img/select_daltokki.png";
+                    img.attr("src", newSrc);
+
+                    // 변경되는 이미지 크기 고정
+                    img.css("width", "120px");
+
+                    // spType 값 업데이트
+                    var type = img.attr("value");
+                    $("#spType").val(type);
+
+                });
+
+                var selectedSpColorImg = null; // 선택된 송편 색 이미지를 저장하는 변수
+                var originalSpColorSrc = null; // 선택된 송편 색 이미지의 원래 src 값을 저장하는 변수
+
+                  $(".sp_color_img").click(function() {
+                    event.preventDefault(); // 이미지 클릭 시 submit되는 오류 해결
+
+                    var img = $(this);
+
+                    // 이미지가 이미 선택되어 있는 경우
+                    if (selectedSpColorImg !== null) {
+                        // 선택된 이미지의 src 값을 원래 값으로 변경
+                        selectedSpColorImg.attr("src", originalSpColorSrc);
+                    }
+
+                    // 선택된 이미지 정보 업데이트
+                    selectedSpColorImg = img;
+                    originalSpColorSrc = img.attr("src");
+
+                    // 이미지 클릭 시 새로운 이미지로 변경
+                    var newSrc = "/img/select_daltokki.png";
+                    img.attr("src", newSrc);
+
+                    // 변경되는 이미지 크기 고정
+                    img.css("width", "120px");
+                    img.css("height", "90px");
+
+                    // spColor 값 업데이트
+                    var color = $(this).attr("value");
+                    $("#spColor").val(color);
+                });
+            });
+        </script>
 </body>
 </html>

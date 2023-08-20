@@ -6,6 +6,10 @@
 <head>
   <meta charset="UTF-8">
   <title>daltokki_login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- 네아로1 -->
+  <script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js" charset="utf-8"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
 <body>
   <h1>달토끼 로그인</h1>
@@ -21,11 +25,74 @@
       </tr>
       <tr>
         <td colspan="2">
-          <button type="submit">로그인</button>
-          <button type="button" onclick="location.href='join'">회원가입</button>
+          <button type="submit" class="btn-hover color-3">로그인</button>
+          <button type="button" onclick="location.href='join'" class="btn-hover color-3">회원가입</button>
+          <button type="button" onclick="location.href='/'" class="btn-hover color-3">돌아가기</button>
+
         </td>
       </tr>
+
     </table>
   </form>
+
+<style>
+    body{
+    background-color: #212539;
+    border:none;
+    }
+    h1, th{
+    color: white;
+    }
+
+    * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    }
+
+    .buttons {
+        margin: 10%;
+        text-align: center;
+    }
+
+    .btn-hover {
+        width: 110px;
+        font-size: 17px;
+        font-weight: 200;
+        font-family: 'NeoDunggeunmoPro-Regular';
+        color: #fff;
+        cursor: pointer;
+        margin: 20px;
+        height: 55px;
+        text-align:center;
+        border: none;
+        background-size: 300% 100%;
+
+        border-radius: 50px;
+        moz-transition: all .4s ease-in-out;
+        -o-transition: all .4s ease-in-out;
+        -webkit-transition: all .4s ease-in-out;
+        transition: all .4s ease-in-out;
+    }
+
+    .btn-hover:hover {
+        background-position: 100% 0;
+        moz-transition: all .4s ease-in-out;
+        -o-transition: all .4s ease-in-out;
+        -webkit-transition: all .4s ease-in-out;
+        transition: all .4s ease-in-out;
+    }
+
+    .btn-hover:focus {
+        outline: none;
+    }
+    .btn-hover.color-3 {
+        background-image: linear-gradient(to right, #667eea, #764ba2, #6B8DD6, #8E37D7);
+        box-shadow: 0 4px 15px 0 rgba(116, 79, 168, 0.75);
+    }
+    .image-container {
+        padding: 20px;
+      }
+    </style>
 </body>
 </html>
